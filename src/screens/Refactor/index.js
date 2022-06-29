@@ -135,4 +135,16 @@ function Refactor() {
 export default Refactor;
 /*
 Write your notes below:
+1 - I would change to a functional component or arrow function component to return my JSX component.
+2 - I would use Typescript.
+3 - I would use the useState hook to create the currentTimeStamp.
+4 - I would use the useEffect hook and not componentDidMount to register the listeners.
+5 - I can use functions in all my functions.
+6 - I can refactor this code and create another component with my FlatList and receive the data by props.
+7 - I need to change widht to width in renderLightHeader, renderDarkHeader because the name is wrong.
+8 - I can use styled-components. I think it's better
+9 - I can use the useCallback hook.
+10 - I can use the memo hook maybe in my ListItem.
+
+https://github.com/alexandreacm/Refactoing-test.git
 */
