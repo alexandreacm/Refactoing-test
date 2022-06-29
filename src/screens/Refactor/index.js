@@ -1,13 +1,7 @@
-import React from "react";
-import {
-  View,
-  FlatList,
-  Text,
-  TouchableHighlight,
-  Button,
-  Image,
-} from "react-native";
-import someListener from "some-listener-library";
+import React, { useState, useEffect, useCallback } from "react";
+import { View, Text, Button, Image } from "react-native";
+//import someListener from "some-listener-library";
+import ListItem from "../../components/ListItem";
 
 /*
 PURPOSE: The purpose of this exercise is for you to demonstrate
@@ -27,79 +21,118 @@ THINGS TO NOTE:
 linting or formatting tools. It is simple enough that we expect
 you to identify what can be improved with it visually.
 */
-class Refactor extends React.Component {
-  state = {
-    currentTimeStamp: this.getTimeStamp(),
+
+const store = new Set();
+
+function Refactor() {
+  const [currentTimeStamp, setCurrentTimeStamp] = useState(
+    new Date().toLocaleString()
+  );
+  const [dataSet] = useState([
+    {
+      id: 1,
+      title: "Item-1",
+    },
+    {
+      id: 2,
+      title: "Item-2",
+    },
+    {
+      id: 3,
+      title: "Item-3",
+    },
+  ]);
+
+  useEffect(() => {
+    // someListener.register((e) => {
+    //   // This callback for the listener is arbitrary
+    // });
+
+    return () => console.log("UNMOUNT");
+  }, []);
+
+  const getTimeStamp = useCallback(() => {
+    return new Date().toLocaleString();
+  }, [currentTimeStamp]);
+
+  const getIsNightTime = () => {
+    return currentTimeStamp.endsWith("PM");
   };
-  componentDidMount() {
-    someListener.register((e) => {
-      // This callback for the listener is arbitrary
-    });
-  }
-  getTimeStamp() {
-    const date = new Date();
-    return date.toLocaleString();
-  }
-  getIsNightTime() {
-    return this.state.currentTimeStamp.endsWith("PM");
-  }
-  renderLightHeader() {
+
+  const renderLightHeader = () => {
     return (
-      <View style={{ width: "100%", height: 100, backgroundColor: "white" }}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "white",
+        }}
+      >
         <Image
-          style={{ widht: "100%", height: 100 }}
+          style={{ width: "100%", height: 100 }}
           resizeMode="contain"
-          source={{ uri: "https://someurl.com/day-time.png" }}
+          source={{
+            uri: "https://png.pngtree.com/png-vector/20190826/ourmid/pngtree-clear-sky-in-the-daytime-png-image_1699567.jpg",
+          }}
         />
         <Text>It is day time</Text>
       </View>
     );
-  }
-  renderDarkHeader() {
+  };
+
+  const renderDarkHeader = () => {
     return (
-      <View style={{ width: "100%", height: 100, backgroundColor: "black" }}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "black",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <Image
-          style={{ widht: "100%", height: 100 }}
+          style={{ width: "100%", height: 100 }}
           resizeMode="contain"
-          source={{ uri: "https://someurl.com/night-time.png" }}
+          source={{
+            uri: "https://img.freepik.com/free-vector/night-sky-with-crescent-moon-shiny-stars-clouds_1108-609.jpg?w=360",
+          }}
         />
-        <Text style={{ color: "white" }}>It is night time</Text>
+        <Text style={{ color: "white", fontSize: 20, textAlign: "center" }}>
+          It is night time
+        </Text>
       </View>
     );
+  };
+
+  function onChangeDate() {
+    setCurrentTimeStamp(getTimeStamp());
   }
-  render() {
-    return (
-      <View style={{ flex: 1, padding: 30 }}>
-        {this.getIsNightTime() ? this.renderDarkHeader : this.renderLightHeader}
-        <View style={{ width: "100%", height: 60 }}>
-          <Text>Current Time: {this.state.currentTimeStamp}</Text>
-          <Button
-            title="Update Timestamp"
-            onPress={() =>
-              this.setState({ currentTimeStamp: this.getTimeStamp() })
-            }
-          />
-        </View>
-        <FlatList
-          data={this.props.dataSet}
-          renderItem={({ item, separators }) => (
-            <TouchableHighlight
-              onPress={() => this._onPress(item)}
-              onShowUnderlay={separators.highlight}
-              onHideUnderlay={separators.unhighlight}
-            >
-              <View style={{ backgroundColor: "white" }}>
-                <Text>{item.title}</Text>
-                <Text>{this.getTimeStamp()}</Text>
-              </View>
-            </TouchableHighlight>
-          )}
-        />
+
+  store.add(getTimeStamp);
+  store.add(getIsNightTime);
+  store.add(renderLightHeader);
+  store.add(renderDarkHeader);
+
+  return (
+    <View style={{ flex: 1, padding: 30 }}>
+      {getIsNightTime() ? renderDarkHeader() : renderLightHeader()}
+      <View style={{ width: "100%", height: 60, marginTop: 60 }}>
+        <Text>Current Time: {currentTimeStamp}</Text>
+        <Button title="Update Timestamp" onPress={onChangeDate} />
       </View>
-    );
-  }
+
+      <ListItem
+        data={dataSet}
+        timeStamp={currentTimeStamp}
+        onPress={onChangeDate}
+      />
+
+      <Text>Total renders: {store.size - 4}</Text>
+    </View>
+  );
 }
-export default RefactorComponent;
+export default Refactor;
 /*
 Write your notes below:
 */
